@@ -1,0 +1,78 @@
+# GNN Lightbox translation.
+msgid ""
+msgstr ""
+"Project-Id-Version: 1.0.0\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: tr_TR\n"
+"X-Domain: gnn-lightbox\n"
+
+msgid "GNN Lightbox - Overview"
+msgstr "GNN Lightbox - Genel Bakış"
+
+msgid "GNN Lightbox"
+msgstr "GNN Lightbox"
+
+msgid "Welcome to the modern, lightweight and fast lightbox plugin."
+msgstr "Modern, hafif ve hızlı lightbox eklentisine hoş geldiniz."
+
+msgid "You can use it by adding class=\"gnn-lightbox\" to your image links, or by letting image links in your content open in the lightbox automatically."
+msgstr "Resim linklerinize class=\"gnn-lightbox\" ekleyerek veya içerikteki resim linklerinin otomatik olarak lightbox içinde açılmasını sağlayarak kullanabilirsiniz."
+
+msgid "General Settings"
+msgstr "Genel Ayarlar"
+
+msgid "Plugin Status"
+msgstr "Eklenti Durumu"
+
+msgid "Active"
+msgstr "Aktif"
+
+msgid "When disabled, the lightbox CSS/JS files are not loaded on the site and automatic detection is turned off."
+msgstr "Kapatıldığında lightbox CSS/JS dosyaları sitede yüklenmez ve otomatik algılama devre dışı kalır."
+
+msgid "Automatic Detection"
+msgstr "Otomatik Algılama"
+
+msgid "Automatically bind image links in content (.jpg, .png, .webp, etc.) to the lightbox"
+msgstr "İçerikteki resim linklerini (.jpg, .png, .webp vb.) otomatik olarak lightbox'a bağla"
+
+msgid "Standard Compatibility"
+msgstr "Standart Uyumluluk"
+
+msgid "Also recognize the legacy WordPress lightbox standard: class=\"lightbox\" and rel=\"lightbox\""
+msgstr "Eski WordPress lightbox standardını da tanı: class=\"lightbox\" ve rel=\"lightbox\""
+
+msgid "Links with rel=\"lightbox\" or class=\"lightbox\" coming from other plugins/themes are also caught automatically."
+msgstr "Diğer eklentilerden/temalardan gelen rel=\"lightbox\" veya class=\"lightbox\" linkleri de otomatik yakalanır."
+
+msgid "Gutenberg Image Block Lightbox"
+msgstr "Gutenberg Görsel Bloğu Lightbox'ı"
+
+msgid "Don't interfere (default) — let WordPress's own image block lightbox (wp-lightbox-container) work as-is, ours will not activate"
+msgstr "Karışma (varsayılan) — WordPress'in kendi görsel bloğu lightbox'ı (wp-lightbox-container) olduğu gibi çalışsın, bizimki devreye girmesin"
+
+msgid "Override — disable WordPress's native lightbox and use GNN Lightbox for these images too"
+msgstr "Ez — WordPress'in yerel lightbox'ını devre dışı bırak, bu görsellerde de GNN Lightbox'ı kullan"
+
+msgid "Theme Color"
+msgstr "Tema Rengi"
+
+msgid "White"
+msgstr "Beyaz"
+
+msgid "Black"
+msgstr "Siyah"
+
+msgid "Save Settings"
+msgstr "Ayarları Kaydet"
+
+msgid "Donate"
+msgstr "Donate"
+
+msgid "Settings"
+msgstr "Settings"
+
+msgid "Check Updates"
+msgstr "Check Updates"

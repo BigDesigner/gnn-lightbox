@@ -1,0 +1,212 @@
+/* GNN Lightbox - Modern CSS3 Styles */
+
+:root {
+    --gnn-lightbox-overlay-bg: rgba(0, 0, 0, 0.85);
+    --gnn-lightbox-content-bg: #fff;
+    --gnn-lightbox-content-shadow: rgba(0, 0, 0, 0.5);
+    --gnn-lightbox-img-shadow: rgba(0, 0, 0, 0.1);
+    --gnn-lightbox-close-bg: #fff;
+    --gnn-lightbox-close-bg-hover: #f0f0f0;
+    --gnn-lightbox-close-shadow: rgba(0, 0, 0, 0.3);
+    --gnn-lightbox-close-stroke: #333;
+    --gnn-lightbox-loader-track: rgba(255, 255, 255, 0.3);
+    --gnn-lightbox-loader-active: #fff;
+    --gnn-lightbox-nav-bg: rgba(255, 255, 255, 0.15);
+    --gnn-lightbox-nav-bg-hover: rgba(255, 255, 255, 0.3);
+    --gnn-lightbox-nav-stroke: #fff;
+    --gnn-lightbox-icon-bg: rgba(0, 0, 0, 0.55);
+    --gnn-lightbox-icon-stroke: #fff;
+}
+
+/* Expand icon shown on hover over lightbox links */
+a.gnn-lightbox,
+a.lightbox,
+a[rel="lightbox"],
+a[rel^="lightbox["] {
+    position: relative;
+    display: inline-block;
+}
+
+a.gnn-lightbox::after,
+a.lightbox::after,
+a[rel="lightbox"]::after,
+a[rel^="lightbox["]::after {
+    content: "";
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    background-color: var(--gnn-lightbox-icon-bg);
+    background-image: var(--gnn-lightbox-icon-svg, url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5'/%3E%3C/svg%3E"));
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 16px 16px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+}
+
+a.gnn-lightbox:hover::after,
+a.lightbox:hover::after,
+a[rel="lightbox"]:hover::after,
+a[rel^="lightbox["]:hover::after {
+    opacity: 1;
+}
+
+.gnn-lightbox-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: var(--gnn-lightbox-overlay-bg);
+    backdrop-filter: blur(5px);
+    z-index: 999999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.gnn-lightbox-overlay.gnn-lightbox-open {
+    opacity: 1;
+    visibility: visible;
+}
+
+.gnn-lightbox-container {
+    position: relative;
+    max-width: 90vw;
+    max-height: 90vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transform: scale(0.95);
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.gnn-lightbox-overlay.gnn-lightbox-open .gnn-lightbox-container {
+    transform: scale(1);
+}
+
+.gnn-lightbox-content {
+    background: var(--gnn-lightbox-content-bg);
+    padding: 15px;
+    border-radius: 8px; /* Mimics the rounded corners of old sprite */
+    box-shadow: 0 10px 30px var(--gnn-lightbox-content-shadow);
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.gnn-lightbox-content img {
+    max-width: 100%;
+    max-height: calc(90vh - 30px);
+    display: block;
+    border-radius: 4px;
+    box-shadow: inset 0 0 5px var(--gnn-lightbox-img-shadow);
+    object-fit: contain;
+}
+
+/* Close Button - resembles the old circular design */
+.gnn-lightbox-close {
+    position: absolute;
+    top: -15px;
+    right: -15px;
+    width: 30px;
+    height: 30px;
+    background: var(--gnn-lightbox-close-bg);
+    border-radius: 50%;
+    box-shadow: 0 2px 10px var(--gnn-lightbox-close-shadow);
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.2s ease, background 0.2s ease;
+    z-index: 1000000;
+}
+
+.gnn-lightbox-close:hover {
+    transform: scale(1.1);
+    background: var(--gnn-lightbox-close-bg-hover);
+}
+
+.gnn-lightbox-close svg {
+    width: 14px;
+    height: 14px;
+    fill: none;
+    stroke: var(--gnn-lightbox-close-stroke);
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+/* Loading Indicator */
+.gnn-lightbox-loader {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    border: 4px solid var(--gnn-lightbox-loader-track);
+    border-top: 4px solid var(--gnn-lightbox-loader-active);
+    border-radius: 50%;
+    animation: gnn-spin 1s linear infinite;
+    display: none;
+}
+
+.gnn-lightbox-loading .gnn-lightbox-loader {
+    display: block;
+}
+.gnn-lightbox-loading .gnn-lightbox-content {
+    display: none; /* Hide the frame while the image is loading */
+}
+
+@keyframes gnn-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Gallery Navigation (Previous/Next) */
+.gnn-lightbox-prev,
+.gnn-lightbox-next {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 44px;
+    height: 44px;
+    background: var(--gnn-lightbox-nav-bg);
+    border-radius: 50%;
+    cursor: pointer;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    transition: background 0.2s ease;
+    z-index: 1000000;
+}
+
+.gnn-lightbox-prev:hover,
+.gnn-lightbox-next:hover {
+    background: var(--gnn-lightbox-nav-bg-hover);
+}
+
+.gnn-lightbox-prev {
+    left: 20px;
+}
+
+.gnn-lightbox-next {
+    right: 20px;
+}
+
+.gnn-lightbox-prev svg,
+.gnn-lightbox-next svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: var(--gnn-lightbox-nav-stroke);
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
