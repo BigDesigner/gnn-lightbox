@@ -55,6 +55,10 @@ class GNN_Lightbox_Updater {
             }
 
             $release_info = json_decode( wp_remote_retrieve_body( $response ) );
+            if ( ! is_object( $release_info ) || empty( $release_info->tag_name ) ) {
+                return false;
+            }
+
             set_site_transient( $this->transient_key, $release_info, 12 * HOUR_IN_SECONDS );
         }
 
@@ -72,12 +76,12 @@ class GNN_Lightbox_Updater {
         if ( ! empty( $release_info->assets ) && is_array( $release_info->assets ) ) {
             foreach ( $release_info->assets as $asset ) {
                 if ( isset( $asset->browser_download_url, $asset->name ) && preg_match( '/\.zip$/i', $asset->name ) ) {
-                    return $asset->browser_download_url;
+                    return esc_url_raw( $asset->browser_download_url );
                 }
             }
         }
 
-        return isset( $release_info->zipball_url ) ? $release_info->zipball_url : '';
+        return isset( $release_info->zipball_url ) ? esc_url_raw( $release_info->zipball_url ) : '';
     }
 
     public function check_update( $transient ) {
@@ -92,7 +96,7 @@ class GNN_Lightbox_Updater {
             
             if ( version_compare( GNN_LIGHTBOX_VERSION, $version, '<' ) ) {
                 $obj = new stdClass();
-                $obj->slug = $this->plugin_slug;
+                $obj->slug = $this->slug;
                 $obj->plugin = $this->plugin_slug;
                 $obj->new_version = $version;
                 $obj->url = $release_info->html_url;
@@ -125,8 +129,9 @@ class GNN_Lightbox_Updater {
             $res->version = ltrim( $release_info->tag_name, 'v' );
             $res->author = 'BigDesigner';
             $res->homepage = $release_info->html_url;
-            $res->requires = '5.0';
-            $res->tested = '6.4';
+            $res->requires = '6.0';
+            $res->requires_php = '7.4';
+            $res->tested = '7.1';
             $package_url = $this->get_package_url( $release_info );
             $res->download_link = $package_url;
             $res->trunk = $package_url;

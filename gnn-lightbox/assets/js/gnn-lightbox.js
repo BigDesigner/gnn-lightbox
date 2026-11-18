@@ -5,6 +5,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // 1. Inject the required DOM elements into the page (only once)
     const overlay = document.createElement('div');
     overlay.className = 'gnn-lightbox-overlay';
+    overlay.setAttribute('role', 'dialog');
+    overlay.setAttribute('aria-modal', 'true');
+    overlay.setAttribute('aria-label', 'Image Lightbox');
 
     const loader = document.createElement('div');
     loader.className = 'gnn-lightbox-loader';
@@ -51,20 +54,52 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let isOpen = false;
     let closeTimeoutId = null;
+    let lastFocusedElement = null;
 
     // Gallery state: links sharing the same data-lightbox-gallery value
     let galleryLinks = [];
     let galleryIndex = -1;
 
     // 2. Functions
+    const isSafeUrl = (url) => {
+        if (!url) {
+            return false;
+        }
+        try {
+            const parsed = new URL(url, window.location.href);
+            return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+        } catch (e) {
+            return false;
+        }
+    };
+
+    const getLinkAlt = (link) => {
+        if (link.dataset && link.dataset.lightboxAlt !== undefined) {
+            return link.dataset.lightboxAlt;
+        }
+        if (typeof link.querySelector === 'function') {
+            const childImg = link.querySelector('img');
+            if (childImg && childImg.alt) {
+                return childImg.alt;
+            }
+        }
+        return (typeof link.getAttribute === 'function' && link.getAttribute('title')) || '';
+    };
+
     const updateNavVisibility = () => {
         const hasGallery = galleryLinks.length > 1;
         prevBtn.style.display = hasGallery ? 'flex' : 'none';
         nextBtn.style.display = hasGallery ? 'flex' : 'none';
     };
 
-    const loadImage = (url) => {
+    const loadImage = (url, altText = '') => {
+        if (!isSafeUrl(url)) {
+            console.warn('GNN Lightbox: blocked unsafe image URL');
+            closeLightbox();
+            return;
+        }
         overlay.classList.add('gnn-lightbox-loading');
+        img.alt = altText;
 
         img.onload = () => {
             overlay.classList.remove('gnn-lightbox-loading');
@@ -77,11 +112,17 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const openLightbox = (link) => {
+        const url = link.getAttribute('href');
+        if (!isSafeUrl(url)) {
+            return;
+        }
+
         if (closeTimeoutId) {
             clearTimeout(closeTimeoutId);
             closeTimeoutId = null;
         }
 
+        lastFocusedElement = document.activeElement;
         isOpen = true;
         overlay.classList.add('gnn-lightbox-open');
 
@@ -100,7 +141,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         updateNavVisibility();
 
-        loadImage(link.getAttribute('href'));
+        loadImage(url, getLinkAlt(link));
+        closeBtn.focus({ preventScroll: true });
     };
 
     const showAt = (index) => {
@@ -108,7 +150,8 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         galleryIndex = (index + galleryLinks.length) % galleryLinks.length;
-        loadImage(galleryLinks[galleryIndex].getAttribute('href'));
+        const targetLink = galleryLinks[galleryIndex];
+        loadImage(targetLink.getAttribute('href'), getLinkAlt(targetLink));
     };
 
     const showPrev = () => showAt(galleryIndex - 1);
@@ -117,8 +160,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeLightbox = () => {
         isOpen = false;
         overlay.classList.remove('gnn-lightbox-open');
+        if (lastFocusedElement && typeof lastFocusedElement.focus === 'function') {
+            lastFocusedElement.focus({ preventScroll: true });
+        }
+        lastFocusedElement = null;
         closeTimeoutId = setTimeout(() => {
             img.src = '';
+            img.alt = '';
             document.body.style.overflow = '';
             galleryLinks = [];
             galleryIndex = -1;
@@ -202,7 +250,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const url = wpImg.currentSrc || wpImg.src;
             openLightbox({
-                dataset: {},
+                dataset: { lightboxAlt: wpImg.alt || '' },
                 getAttribute: (attr) => (attr === 'href' ? url : null),
             });
         }, true); // Runs in the capture phase, before WP's own listener
@@ -225,9 +273,21 @@ document.addEventListener('DOMContentLoaded', () => {
         e.stopPropagation();
         showPrev();
     });
+    prevBtn.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            showPrev();
+        }
+    });
     nextBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         showNext();
+    });
+    nextBtn.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            showNext();
+        }
     });
 
     // Background (overlay) clicked

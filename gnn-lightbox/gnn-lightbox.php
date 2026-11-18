@@ -4,6 +4,8 @@
  * Plugin URI:  https://github.com/BigDesigner/gnn-lightbox
  * Description: Modern, lightweight and fast lightbox plugin built with vanilla JS and CSS3.
  * Version:     1.1.0
+ * Requires at least: 6.0
+ * Requires PHP: 7.4
  * Author:      BigDesigner
  * Author URI:  https://github.com/BigDesigner
  * Text Domain: gnn-lightbox
@@ -42,7 +44,7 @@ class GNN_Lightbox {
     }
 
     private function init_hooks() {
-        add_action( 'plugins_loaded', array( $this, 'load_textdomain' ) );
+        add_action( 'init', array( $this, 'load_textdomain' ), 1 );
         add_action( 'admin_menu', array( $this, 'register_admin_menu' ) );
         add_action( 'admin_init', array( $this, 'register_settings' ) );
         add_filter( 'plugin_action_links', array( $this, 'plugin_action_links' ), 10, 2 );
@@ -253,7 +255,7 @@ class GNN_Lightbox {
 
     public function plugin_action_links( $links, $file ) {
         if ( $file === plugin_basename( GNN_LIGHTBOX_FILE ) ) {
-            $donate_link = '<a href="https://buymeacoffee.com/bigdesigner" target="_blank" style="font-weight:bold; color:#d63638;">'
+            $donate_link = '<a href="https://buymeacoffee.com/bigdesigner" target="_blank" rel="noopener noreferrer" style="font-weight:bold; color:#d63638;">'
                 . esc_html__( 'Donate', 'gnn-lightbox' ) . '</a>';
 
             $settings_link = '<a href="' . esc_url( admin_url( 'admin.php?page=lightbox-settings' ) ) . '">'
@@ -357,7 +359,7 @@ class GNN_Lightbox {
         }
 
         // Automatically add the gnn-lightbox class to every <a> tag whose href points to an image
-        $pattern = '/(<a[^>]*href=["\'](?:[^"\']+)\.(?:jpg|jpeg|png|gif|webp|bmp)["\'][^>]*>)/i';
+        $pattern = '/(<a[^>]*href=["\'](?:[^"\']+)\.(?:jpg|jpeg|png|gif|webp|avif|bmp)(?:\?[^"\']*)?["\'][^>]*>)/i';
         $content = preg_replace_callback( $pattern, function( $matches ) {
             $link = $matches[1];
             if ( strpos( $link, 'class=' ) !== false ) {

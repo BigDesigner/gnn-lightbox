@@ -57,11 +57,9 @@ a[rel^="lightbox["]:hover::after {
 
 .gnn-lightbox-overlay {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
+    inset: 0;
     background: var(--gnn-lightbox-overlay-bg);
+    -webkit-backdrop-filter: blur(5px);
     backdrop-filter: blur(5px);
     z-index: 999999;
     display: flex;
@@ -209,4 +207,11 @@ a[rel^="lightbox["]:hover::after {
     stroke-width: 3;
     stroke-linecap: round;
     stroke-linejoin: round;
+}
+
+.gnn-lightbox-close:focus-visible,
+.gnn-lightbox-prev:focus-visible,
+.gnn-lightbox-next:focus-visible {
+    outline: 2px solid #2271b1;
+    outline-offset: 2px;
 }
