@@ -365,7 +365,7 @@ class GNN_Lightbox {
             if ( strpos( $link, 'class=' ) !== false ) {
                 // A class already exists, append gnn-lightbox
                 if ( strpos( $link, 'gnn-lightbox' ) === false ) {
-                    $link = preg_replace( '/class=["\']/', 'class="gnn-lightbox ', $link, 1 );
+                    $link = preg_replace( '/class=(["\'])/', 'class=$1gnn-lightbox ', $link, 1 );
                 }
             } else {
                 // No class yet, add class="gnn-lightbox"
@@ -383,7 +383,11 @@ class GNN_Lightbox {
             'rel'  => ''
         ), $atts, 'gnn_lightbox' );
 
-        $href_attr = ! empty( $atts['href'] ) ? ' href="' . esc_url( $atts['href'] ) . '"' : '';
+        if ( empty( $atts['href'] ) ) {
+            return do_shortcode( $content );
+        }
+
+        $href_attr = ' href="' . esc_url( $atts['href'] ) . '"';
         $rel_attr  = ! empty( $atts['rel'] ) ? ' data-lightbox-gallery="' . esc_attr( $atts['rel'] ) . '"' : '';
 
         return '<a class="gnn-lightbox"' . $href_attr . $rel_attr . '>' . do_shortcode( $content ) . '</a>';

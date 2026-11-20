@@ -132,10 +132,10 @@ document.addEventListener('DOMContentLoaded', () => {
         // Determine the gallery group
         const galleryName = getGalleryName(link);
         if (galleryName) {
-            galleryLinks = Array.from(document.querySelectorAll('a.gnn-lightbox, a.lightbox, a[rel^="lightbox"]'))
-                .filter(l => getGalleryName(l) === galleryName);
+            galleryLinks = getMatchingLinks().filter(l => getGalleryName(l) === galleryName);
             galleryIndex = galleryLinks.indexOf(link);
-        } else {
+        }
+        if (!galleryName || galleryIndex === -1) {
             galleryLinks = [link];
             galleryIndex = 0;
         }
@@ -179,20 +179,31 @@ document.addEventListener('DOMContentLoaded', () => {
     const standardSupport = !!(window.gnnLightboxSettings && window.gnnLightboxSettings.standardSupport);
     const gutenbergMode = (window.gnnLightboxSettings && window.gnnLightboxSettings.gutenbergMode) || 'ignore';
 
+    const getMatchingLinks = () => {
+        const selectors = ['a.gnn-lightbox'];
+        if (standardSupport) {
+            selectors.push('a.lightbox', 'a[rel="lightbox"]', 'a[rel^="lightbox["]');
+        }
+        return Array.from(document.querySelectorAll(selectors.join(', ')))
+            .filter(link => !link.closest('.wp-lightbox-container'));
+    };
+
     // Legacy WP lightbox pattern: rel="lightbox[gallery-name]" -> extracts the gallery name
     let autoGalleryCounter = 0;
     const getGalleryName = (link) => {
-        if (link.dataset.lightboxGallery) {
+        if (link.dataset && link.dataset.lightboxGallery) {
             return link.dataset.lightboxGallery;
         }
-        const rel = link.getAttribute('rel') || '';
+        const rel = (typeof link.getAttribute === 'function' && link.getAttribute('rel')) || '';
         const match = rel.match(/^lightbox\[(.+)\]$/i);
         if (match) {
             return match[1];
         }
         // No explicit gallery name given: automatically group links that share
         // a common container, like WordPress's own gallery block markup.
-        const container = link.closest('.wp-block-gallery, .gallery, [data-gnn-gallery]');
+        const container = typeof link.closest === 'function'
+            ? link.closest('.wp-block-gallery, .gallery, [data-gnn-gallery]')
+            : null;
         if (container) {
             if (!container.dataset.gnnAutoGalleryId) {
                 autoGalleryCounter += 1;
@@ -205,16 +216,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Bind all lightbox links on the page (gnn-lightbox class + optional legacy standard)
     const bindLinks = () => {
-        const selectors = ['a.gnn-lightbox'];
-        if (standardSupport) {
-            selectors.push('a.lightbox', 'a[rel="lightbox"]', 'a[rel^="lightbox["]');
-        }
-        const links = document.querySelectorAll(selectors.join(', '));
+        const links = getMatchingLinks();
         links.forEach(link => {
-            // Don't interfere with WordPress's own Gutenberg image block lightbox
-            if (link.closest('.wp-lightbox-container')) {
-                return;
-            }
             // Avoid attaching duplicate listeners
             if (!link.dataset.gnnBound) {
                 link.dataset.gnnBound = 'true';
@@ -252,6 +255,7 @@ document.addEventListener('DOMContentLoaded', () => {
             openLightbox({
                 dataset: { lightboxAlt: wpImg.alt || '' },
                 getAttribute: (attr) => (attr === 'href' ? url : null),
+                closest: () => null,
             });
         }, true); // Runs in the capture phase, before WP's own listener
     }
@@ -297,7 +301,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Keyboard controls
+    // Keyboard controls & modal focus trap
     document.addEventListener('keydown', (e) => {
         if (!isOpen) {
             return;
@@ -308,6 +312,24 @@ document.addEventListener('DOMContentLoaded', () => {
             showPrev();
         } else if (e.key === 'ArrowRight') {
             showNext();
+        } else if (e.key === 'Tab') {
+            const focusables = [prevBtn, closeBtn, nextBtn].filter(
+                el => window.getComputedStyle(el).display !== 'none'
+            );
+            if (focusables.length === 0) {
+                return;
+            }
+            const first = focusables[0];
+            const last = focusables[focusables.length - 1];
+            if (e.shiftKey) {
+                if (document.activeElement === first || !overlay.contains(document.activeElement)) {
+                    e.preventDefault();
+                    last.focus();
+                }
+            } else if (document.activeElement === last || !overlay.contains(document.activeElement)) {
+                e.preventDefault();
+                first.focus();
+            }
         }
     });
 });
