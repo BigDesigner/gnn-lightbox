@@ -1,3 +1,3 @@
 | Original Path | New Path | Archive Path | Action | Notes |
 |---|---|---|---|---|
-| * | * | `.archive/` | Archived | All old lightbox files were moved to `.archive` to start fresh with GNN standards. |
+| `*` | `gnn-lightbox/*` | `.archive/` (Deleted) | Migrated & Cleaned | All legacy lightbox files were temporarily moved to `.archive/`, replaced with GNN-standard code in `gnn-lightbox/`, and `.archive/` was permanently removed on 2026-08-04. |
