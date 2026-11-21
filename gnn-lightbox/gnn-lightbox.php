@@ -3,7 +3,7 @@
  * Plugin Name: GNN Lightbox
  * Plugin URI:  https://github.com/BigDesigner/gnn-lightbox
  * Description: Modern, lightweight and fast lightbox plugin built with vanilla JS and CSS3.
- * Version:     1.2.1
+ * Version:     1.2.2
  * Requires at least: 6.0
  * Requires PHP: 7.4
  * Author:      BigDesigner
@@ -94,10 +94,8 @@ class GNN_Lightbox {
     }
 
     private function load_updater() {
-        if ( is_admin() ) {
-            require_once GNN_LIGHTBOX_DIR . 'class-gnn-lightbox-updater.php';
-            new GNN_Lightbox_Updater();
-        }
+        require_once GNN_LIGHTBOX_DIR . 'class-gnn-lightbox-updater.php';
+        new GNN_Lightbox_Updater();
     }
 
     public function register_admin_menu() {
