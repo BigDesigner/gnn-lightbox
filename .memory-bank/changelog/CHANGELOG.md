@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.2.3] - 2026-11-25
+### Fixed
+- Updated `class-gnn-lightbox-updater.php` to read the local plugin version directly from disk via `get_local_version()` instead of relying on potentially stale WordPress update transients.
+
 ## [1.2.1] - 2026-11-20
 ### Fixed
 - Fixed `TypeError: link.closest is not a function` crash in Gutenberg `override` mode (`gnn-lightbox/assets/js/gnn-lightbox.js`).
